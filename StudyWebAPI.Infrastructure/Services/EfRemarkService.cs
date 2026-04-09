@@ -100,6 +100,7 @@ namespace StudyWebAPI.Infrastructure.Services
             return (true, null, remarks);
         }
 
+
         public async Task<(bool ok, string? error, RemarkDto? remarkDto)> UpdateAsync(int id, CreateUpdateDto createUpdateDto)
         {
             var existingRemark = await _dbContext.Remarks.FirstOrDefaultAsync(r => r.Id == id);
@@ -132,6 +133,28 @@ namespace StudyWebAPI.Infrastructure.Services
             );
 
             return (true, null, remarkDto);
+        }
+        public async Task<(bool ok, string? error, List<RemarkDto>? remarkDtos)> SearchAsync(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return (false, "Строка поиска пустая", (List<RemarkDto>?)null);
+            }
+            query = query.Trim(); //!!!
+            var Remarks = await _dbContext.Remarks
+                .AsNoTracking()
+                .Where(r => EF.Functions.ToTsVector("russian", r.Title)
+                .Matches(EF.Functions.PlainToTsQuery("russian", query)))
+                .OrderBy(r => r.Id)
+                .Select(r => new RemarkDto(
+                    r.Id,
+                    r.Title,
+                    r.RemarkContent,
+                    r.CreatedAt,
+                    r.HasImage
+                ))
+                .ToListAsync();
+            return (true, null, Remarks);
         }
     }
 }

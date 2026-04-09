@@ -58,5 +58,15 @@ namespace RemarkWebAPI.Controllers
             }
             return NoContent();
         }
+        [HttpGet("search")]
+        public async Task<IActionResult> Search(string query)
+        {
+            var result = await _remarkService.SearchAsync(query);
+            if (!result.ok)
+            {
+                return BadRequest(result.error);
+            }
+            return Ok(result.remarkDtos);
+        }
     }
 }

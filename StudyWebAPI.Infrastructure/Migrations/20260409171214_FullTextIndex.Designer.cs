@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StudyWebAPI.Infrastructure.Data;
@@ -11,9 +12,11 @@ using StudyWebAPI.Infrastructure.Data;
 namespace StudyWebAPI.Infrastructure.Migrations
 {
     [DbContext(typeof(RemarkDbContext))]
-    partial class RemarkDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260409171214_FullTextIndex")]
+    partial class FullTextIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

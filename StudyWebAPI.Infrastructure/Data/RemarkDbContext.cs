@@ -16,7 +16,14 @@ namespace StudyWebAPI.Infrastructure.Data
         {
             base.OnModelCreating (modelBuilder);
 
-            modelBuilder.Entity<RemarkEntity>().HasKey(r => r.Id);
+            modelBuilder.Entity<RemarkEntity>()
+                .HasKey(r => r.Id);
+
+
+            modelBuilder.Entity<RemarkEntity>()
+                .HasIndex(r => r.Title)
+                .HasMethod("GIN")
+                .IsTsVectorExpressionIndex("russian");
         }
     }
 }
