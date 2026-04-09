@@ -16,8 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Entities\StudyWebAPI.Domain.csproj" />
+    <ProjectReference Include="..\StudyWebAPI.Domain\StudyWebAPI.Domain.csproj" />
     <ProjectReference Include="..\StudyWebAPI.Application\StudyWebAPI.Application.csproj" />
+    <ProjectReference Include="..\StudyWebAPI.Domain\StudyWebAPI.Domain.csproj" />
   </ItemGroup>
 
 </Project>

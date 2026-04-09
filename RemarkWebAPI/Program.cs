@@ -9,37 +9,32 @@ namespace RemarkWebAPI
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(args); //настройка приложения до его сборки
 
             builder.Services.AddDbContext<RemarkDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
-            
-            builder.Services.AddControllers();
+                options.UseNpgsql(builder.Configuration.GetConnectionString("Default"))); //регистрация контекста данных и настройка подключения к БД
 
-            builder.Services.AddScoped<IRemarkService, EfRemarkService>();
+            builder.Services.AddControllers(); //регистрация контроллеров для обработки HTTP-запросов
 
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<IRemarkService, EfRemarkService>(); //регистрация сервиса, который будет использоваться в контроллерах
 
-            builder.Services.AddHttpsRedirection(options =>
+            builder.Services.AddEndpointsApiExplorer(); // Добавляется инфраструктура для обнаружения API-endpoints
+            builder.Services.AddSwaggerGen(); // Добавляется генерация Swagger-документации для API, что позволяет легко тестировать и документировать API-интерфейсы
+
+
+            var app = builder.Build(); //строительство приложения на основе настроек, добавленных в builder. На этом этапе приложение готово к запуску, и можно настроить конвейер обработки HTTP-запросов.
+
+            if (app.Environment.IsDevelopment()) // проверка, находится ли приложение в режиме разработки. Если да, то включается Swagger UI для удобного тестирования API.
             {
-                options.HttpsPort = 7264;
-                options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-            });
-
-            var app = builder.Build();
-
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwagger(); // Включение middleware для генерации Swagger-документации
+                app.UseSwaggerUI(); // Включение middleware для отображения Swagger UI, который позволяет визуально исследовать и тестировать API
             }
 
-            app.UseHttpsRedirection();
+            app.UseHttpsRedirection(); // Включение middleware для перенаправления HTTP-запросов на HTTPS, обеспечивая безопасность передачи данных
 
-            app.MapControllers();
+            app.MapControllers(); // Настройка маршрутизации для контроллеров, что позволяет обрабатывать входящие HTTP-запросы и направлять их к соответствующим методам в контроллерах
 
-            app.Run();
+            app.Run(); // Запуск приложения, что позволяет ему начать прослушивание входящих HTTP-запросов и обрабатывать их в соответствии с настроенной маршрутизацией и логикой контроллеров.
         }
     }
 }

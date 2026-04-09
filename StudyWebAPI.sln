@@ -5,7 +5,7 @@ VisualStudioVersion = 17.14.36915.13 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemarkWebAPI", "RemarkWebAPI\RemarkWebAPI.csproj", "{CCC6D6CF-3E18-4D92-B0A2-747E941622C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyWebAPI.Domain", "Entities\StudyWebAPI.Domain.csproj", "{CF013C1C-54EF-4CB2-BFB3-C4D7641FD767}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyWebAPI.Domain", "StudyWebAPI.Domain\StudyWebAPI.Domain.csproj", "{CF013C1C-54EF-4CB2-BFB3-C4D7641FD767}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyWebAPI.Application", "StudyWebAPI.Application\StudyWebAPI.Application.csproj", "{B0F91110-52C5-4441-A0B2-000A4078C62A}"
 EndProject
