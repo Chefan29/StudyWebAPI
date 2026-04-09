@@ -2,6 +2,7 @@
 using StudyWebAPI.Application.Interfaces;
 using StudyWebAPI.Infrastructure.Data;
 using StudyWebAPI.Infrastructure.Services;
+using RemarkWebAPI.Middlewares;
 
 namespace RemarkWebAPI
 {
@@ -29,6 +30,8 @@ namespace RemarkWebAPI
                 app.UseSwagger(); // Включение middleware для генерации Swagger-документации
                 app.UseSwaggerUI(); // Включение middleware для отображения Swagger UI, который позволяет визуально исследовать и тестировать API
             }
+
+            app.UseMiddleware<LoggingMiddleware>(); // Включение пользовательского middleware для логирования входящих HTTP-запросов и исходящих HTTP-ответов, что позволяет отслеживать и анализировать взаимодействия с API
 
             app.UseHttpsRedirection(); // Включение middleware для перенаправления HTTP-запросов на HTTPS, обеспечивая безопасность передачи данных
 
