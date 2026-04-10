@@ -17,7 +17,9 @@ namespace RemarkWebAPI
 
             builder.Services.AddControllers(); //регистрация контроллеров для обработки HTTP-запросов
 
-            builder.Services.AddScoped<IRemarkQueryService, EfRemarkQueryService>(); //регистрация сервиса, который будет использоваться в контроллерах
+            builder.Services.AddScoped<IRemarkQueryService, EfRemarkQueryService>();
+            builder.Services.AddScoped<IRemarkComandService, EFRemarkComandService>();
+            builder.Services.AddScoped<IRemarkStatisticsService, EFRemarkStatisticsService>();
 
             builder.Services.AddEndpointsApiExplorer(); // Добавляется инфраструктура для обнаружения API-endpoints
             builder.Services.AddSwaggerGen(); // Добавляется генерация Swagger-документации для API, что позволяет легко тестировать и документировать API-интерфейсы

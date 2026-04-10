@@ -20,9 +20,6 @@ namespace StudyWebAPI.Infrastructure.Services
 
         public async Task<StatisticsDto> GetStatisticsAsync()
         {
-            var topWordsTask = GetTopWordsAsync();
-            var remarksByDayTask = GetRemarksByDayAsync();
-
             var summary = await _dbContext.Remarks
                 .AsNoTracking()
                 .GroupBy(_ => 1)
@@ -34,8 +31,8 @@ namespace StudyWebAPI.Infrastructure.Services
                 })
                 .FirstAsync();
 
-            var topWords = await topWordsTask;
-            var remarksByDay = await remarksByDayTask;
+            var topWords = await GetTopWordsAsync();
+            var remarksByDay = await GetRemarksByDayAsync();
 
             return new StatisticsDto(
                 summary.TotalRemarks,
@@ -65,15 +62,23 @@ namespace StudyWebAPI.Infrastructure.Services
         }
         private async Task<List<RemarksByDayDto>> GetRemarksByDayAsync()
         {
-            var result = await _dbContext.Remarks
+            var rawResult = await _dbContext.Remarks
                 .AsNoTracking()
                 .GroupBy(r => r.CreatedAt.Date)
-                .Select(g => new RemarksByDayDto(
-                    DateOnly.FromDateTime(g.Key),
-                    g.Count()
-                ))
+                .Select(g => new
+                {
+                    Day = g.Key,
+                    Count = g.Count()
+                })
                 .OrderBy(x => x.Day)
                 .ToListAsync();
+
+            var result = rawResult
+                .Select(x => new RemarksByDayDto(
+                    DateOnly.FromDateTime(x.Day),
+                    x.Count
+                ))
+                .ToList();
 
             return result;
         }

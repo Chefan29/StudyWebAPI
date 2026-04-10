@@ -9,20 +9,22 @@ namespace RemarkWebAPI.Controllers
     [Route("api/remarks")]
     public class RemarksController : ControllerBase
     {
-        private readonly IRemarkQueryService _remarkService;
-        public RemarksController(IRemarkQueryService remarkService)
+        private readonly IRemarkQueryService _remarkQueryService;
+        private readonly IRemarkComandService _remarkComandService;
+        public RemarksController(IRemarkQueryService remarkQueryService, IRemarkComandService remarkComandService)
         {
-            _remarkService = remarkService;
+            _remarkQueryService = remarkQueryService;
+            _remarkComandService = remarkComandService;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _remarkService.GetAllAsync());
+            return Ok(await _remarkQueryService.GetAllAsync());
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await _remarkService.GetByIdAsync(id);
+            var result = await _remarkQueryService.GetByIdAsync(id);
             if (!result.ok)
             {
                 return NotFound(result.error);
@@ -32,7 +34,7 @@ namespace RemarkWebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateUpdateDto createUpdateDto)
         {
-            var result = await _remarkService.CreateAsync(createUpdateDto);
+            var result = await _remarkComandService.CreateAsync(createUpdateDto);
             if (!result.ok)
             {
                 return BadRequest(result.error);
@@ -42,7 +44,7 @@ namespace RemarkWebAPI.Controllers
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update (int id, CreateUpdateDto updateDto)
         {
-            var result = await _remarkService.UpdateAsync(id, updateDto);
+            var result = await _remarkComandService.UpdateAsync(id, updateDto);
             if (!result.ok)
             {
                 return BadRequest(result.error);
@@ -52,7 +54,7 @@ namespace RemarkWebAPI.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete (int id)
         {
-            if (!await _remarkService.DeleteAsync(id))
+            if (!await _remarkComandService.DeleteAsync(id))
             {
                 return NotFound();
             }
@@ -61,7 +63,7 @@ namespace RemarkWebAPI.Controllers
         [HttpGet("search")]
         public async Task<IActionResult> Search(string query)
         {
-            var result = await _remarkService.SearchAsync(query);
+            var result = await _remarkQueryService.SearchAsync(query);
             if (!result.ok)
             {
                 return BadRequest(result.error);
