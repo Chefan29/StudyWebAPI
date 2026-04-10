@@ -8,7 +8,7 @@ using StudyWebAPI.Infrastructure.Data;
 
 namespace StudyWebAPI.Infrastructure.Services
 {
-    public class EfRemarkService : IRemarkService
+    public class EfRemarkService : IRemarkQueryService
     {
         private readonly RemarkDbContext _dbContext;
         public EfRemarkService(RemarkDbContext dbContext)

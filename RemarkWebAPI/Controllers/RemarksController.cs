@@ -9,8 +9,8 @@ namespace RemarkWebAPI.Controllers
     [Route("api/remarks")]
     public class RemarksController : ControllerBase
     {
-        private readonly IRemarkService _remarkService;
-        public RemarksController(IRemarkService remarkService)
+        private readonly IRemarkQueryService _remarkService;
+        public RemarksController(IRemarkQueryService remarkService)
         {
             _remarkService = remarkService;
         }

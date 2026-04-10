@@ -7,13 +7,11 @@ using System.Threading.Tasks;
 
 namespace StudyWebAPI.Application.Interfaces
 {
-    public interface IRemarkService
+    public interface IRemarkQueryService
     {
         Task <List<RemarkDto>> GetAllAsync();
         Task<(bool ok, string? error, RemarkDto? remarkDto)> GetByIdAsync (int id);
-        Task <(bool ok, string? error, RemarkDto? remarkDto)> CreateAsync(CreateUpdateDto createUpdateDto);
-        Task<(bool ok, string? error, RemarkDto? remarkDto)> UpdateAsync(int id, CreateUpdateDto createUpdateDto);
-        Task<bool> DeleteAsync(int id);
+        
         Task <(bool ok, string? error, List<RemarkDto>? remarkDtos)> SearchAsync(string query);
     }
 }
