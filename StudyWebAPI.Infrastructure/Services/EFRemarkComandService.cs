@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using StudyWebAPI.Application.DTOs;
 using StudyWebAPI.Application.Interfaces;
 using StudyWebAPI.Domain.Entities;
@@ -14,9 +15,11 @@ namespace StudyWebAPI.Infrastructure.Services
     public class EFRemarkComandService : IRemarkComandService
     {
         private readonly RemarkDbContext _dbContext;
-        public EFRemarkComandService(RemarkDbContext dbContext)
+        private readonly IDistributedCache _cache;
+        public EFRemarkComandService(RemarkDbContext dbContext, IDistributedCache cache)
         {
             _dbContext = dbContext;
+            _cache = cache;
         }
         public async Task<(bool ok, string? error, RemarkDto? remarkDto)> UpdateAsync(int id, CreateUpdateDto createUpdateDto)
         {
@@ -48,6 +51,8 @@ namespace StudyWebAPI.Infrastructure.Services
                 existingRemark.CreatedAt,
                 existingRemark.HasImage
             );
+
+            await _cache.RemoveAsync("remarks:all");
 
             return (true, null, remarkDto);
         }
@@ -82,6 +87,9 @@ namespace StudyWebAPI.Infrastructure.Services
                 createUpdateDto.HasImage
 
             );
+
+            await _cache.RemoveAsync("remarks:all");
+
             return (true, null, remarkDto);
         }
         public async Task<bool> DeleteAsync(int id)
@@ -93,6 +101,8 @@ namespace StudyWebAPI.Infrastructure.Services
 
             _dbContext.Remove(existingRemark);
             await _dbContext.SaveChangesAsync();
+
+            await _cache.RemoveAsync("remarks:all");
 
             return true;
 

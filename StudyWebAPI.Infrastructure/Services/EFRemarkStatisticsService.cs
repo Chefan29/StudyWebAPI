@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using StudyWebAPI.Application.DTOs;
 using StudyWebAPI.Application.Interfaces;
 using StudyWebAPI.Infrastructure.Data;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace StudyWebAPI.Infrastructure.Services
@@ -13,14 +15,29 @@ namespace StudyWebAPI.Infrastructure.Services
     public class EFRemarkStatisticsService : IRemarkStatisticsService
     {
         private readonly RemarkDbContext _dbContext;
-        public EFRemarkStatisticsService(RemarkDbContext dbContext)
+        private readonly IDistributedCache _cache;
+        public EFRemarkStatisticsService(RemarkDbContext dbContext, IDistributedCache cache)
         {
             _dbContext = dbContext;
+            _cache = cache;
         }
 
         public async Task<StatisticsDto> GetStatisticsAsync()
         {
-            var summary = await _dbContext.Remarks
+            const string cacheKey = "remarks:statistics";
+            var cachedJson = await _cache.GetStringAsync(cacheKey);
+
+            if (!string.IsNullOrWhiteSpace(cachedJson))
+            {
+                var cachedStatistics = JsonSerializer.Deserialize<StatisticsDto>(cachedJson);
+
+                if (cachedStatistics is not null)
+                {
+                    return cachedStatistics;
+                }
+            }
+
+                var summary = await _dbContext.Remarks
                 .AsNoTracking()
                 .GroupBy(_ => 1)
                 .Select(g => new
@@ -34,13 +51,23 @@ namespace StudyWebAPI.Infrastructure.Services
             var topWords = await GetTopWordsAsync();
             var remarksByDay = await GetRemarksByDayAsync();
 
-            return new StatisticsDto(
+            var statistics = new StatisticsDto(
                 summary.TotalRemarks,
                 summary.RemarksWithImage,
                 summary.RemarksWithoutImage,
                 topWords,
                 remarksByDay
             );
+            var cacheOptions = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            };
+
+            var json = JsonSerializer.Serialize(statistics);
+
+            await _cache.SetStringAsync(cacheKey, json, cacheOptions);
+
+            return statistics;
         }
         private async Task<List<TopWordDto>> GetTopWordsAsync()
         {

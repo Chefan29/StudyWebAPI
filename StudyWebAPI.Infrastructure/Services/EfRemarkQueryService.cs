@@ -1,9 +1,12 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Caching.Distributed;
 using StudyWebAPI.Application.DTOs;
 using StudyWebAPI.Application.Interfaces;
 using StudyWebAPI.Domain.Entities;
 using StudyWebAPI.Infrastructure.Data;
+using System.Text.Json;
 
 
 namespace StudyWebAPI.Infrastructure.Services
@@ -11,13 +14,28 @@ namespace StudyWebAPI.Infrastructure.Services
     public class EfRemarkQueryService : IRemarkQueryService
     {
         private readonly RemarkDbContext _dbContext;
-        public EfRemarkQueryService(RemarkDbContext dbContext)
+        private readonly IDistributedCache _cache;
+        public EfRemarkQueryService(RemarkDbContext dbContext, IDistributedCache cache) 
         {
             _dbContext = dbContext;
+            _cache = cache;
         }
         public async Task<List<RemarkDto>> GetAllAsync()
         {
-           return await _dbContext.Remarks
+            const string cacheKey = "remarks:all";
+            var cachedJson = await _cache.GetStringAsync(cacheKey);
+
+            if (!string.IsNullOrEmpty(cachedJson))
+            {
+                var cachedRemarks = JsonSerializer.Deserialize<List<RemarkDto>>(cachedJson);
+
+                if (cachedRemarks is not null)
+                {
+                    return cachedRemarks;
+                }
+            }
+
+            var remarks = await _dbContext.Remarks
                 .AsNoTracking()
                 .OrderBy(r => r.Id)
                 .Select(r => new RemarkDto
@@ -28,6 +46,16 @@ namespace StudyWebAPI.Infrastructure.Services
                 r.HasImage
                     ))
                 .ToListAsync();
+            var cacheOptions = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            };
+
+            var json = JsonSerializer.Serialize(remarks);
+
+            await _cache.SetStringAsync(cacheKey, json, cacheOptions);
+
+            return remarks;
         }
 
         public async Task<(bool ok, string? error, RemarkDto? remarkDto)> GetByIdAsync(int id)

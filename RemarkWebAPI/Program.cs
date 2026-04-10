@@ -24,6 +24,11 @@ namespace RemarkWebAPI
             builder.Services.AddEndpointsApiExplorer(); // Добавляется инфраструктура для обнаружения API-endpoints
             builder.Services.AddSwaggerGen(); // Добавляется генерация Swagger-документации для API, что позволяет легко тестировать и документировать API-интерфейсы
 
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = builder.Configuration.GetConnectionString("Redis");
+                options.InstanceName = "StudyWebApi:";
+            });
 
             var app = builder.Build(); //строительство приложения на основе настроек, добавленных в builder. На этом этапе приложение готово к запуску, и можно настроить конвейер обработки HTTP-запросов.
 
