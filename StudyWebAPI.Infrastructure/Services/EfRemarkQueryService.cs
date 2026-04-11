@@ -1,10 +1,7 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using StudyWebAPI.Application.DTOs;
 using StudyWebAPI.Application.Interfaces;
-using StudyWebAPI.Domain.Entities;
 using StudyWebAPI.Infrastructure.Data;
 using System.Text.Json;
 
